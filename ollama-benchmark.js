@@ -52,9 +52,10 @@ async function makeApiCall(server, model, prompt) {
 
 async function main() {
     const start = now();
-    const server = "192.168.1.40" // GPU server
-    // const model = "llama3.1"
-    const model = "llama3.1:70b"
+    // const server = "192.168.1.40" // GPU server
+    const server = "192.168.1.103" // GPU server 2
+    const model = "llama3.1"
+    // const model = "llama3.1:70b"
     // const model = "gemma2:2b"
     const prompt = "Why is the sky blue?";
     // const prompt = "What is the speed of light?";
@@ -62,11 +63,28 @@ async function main() {
     let response = await makeApiCall(server, model, prompt);
     const end = now();
     const elapsedTime = (end - start).toFixed(2); // in milliseconds
+    let elapedTimeHR = msToTime(elapsedTime)
     console.log(response)
-    console.log(`Elapsed time: ${msToTime(elapsedTime)} ms`);
+    console.log(`Elapsed time: ${elapedTimeHR}`);
     let tps = response.eval_count / nanoToSeconds(response.total_duration)
     console.log("TOPs:", tps)
-    saveToJSON(response, `./results/${Date()}.json`)
+    let promptLength = prompt.length
+    let responseLength = response.response.length
+    console.log("PT:", promptLength, "RL:", responseLength)
+    let tops2 = (promptLength + responseLength) / nanoToSeconds(response.total_duration)
+    console.log("TOPS2:", tops2)
+    
+    let evaluation = {
+        prompt: prompt,
+        elapsed_time: elapedTimeHR,
+        tops: tps,
+        promptLength: promptLength,
+        responseLength: responseLength,
+        tops2: tops2,
+        response: response
+    }
+    let fileName = `GPU server2 3060Ti 8gb ${model}`
+    saveToJSON(evaluation, `./results/${fileName}.json`)
 }
 
 main()
