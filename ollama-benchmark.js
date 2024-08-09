@@ -74,6 +74,7 @@ async function main() {
     let tops2 = (promptLength + responseLength) / nanoToSeconds(response.total_duration)
     console.log("TOPS2:", tops2)
     
+    // To calculate how fast the response is generated in tokens per second (token/s), divide eval_count / eval_duration * 10^9.
     let evaluation = {
         prompt: prompt,
         elapsed_time: elapedTimeHR,
